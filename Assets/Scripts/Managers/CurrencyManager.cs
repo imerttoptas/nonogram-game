@@ -58,6 +58,8 @@ public class CurrencyManager : Singleton<CurrencyManager>
         foreach (CurrencyItem currencyItem in currencyItemsList)
         {
             currencyItem.Initialize();
+            Debug.Log(currencyItem.currencyItemKey + " : " + currencyItem.initialCount);
+
         }
     }
 }

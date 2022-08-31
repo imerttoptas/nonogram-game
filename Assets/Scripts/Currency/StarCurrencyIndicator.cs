@@ -8,7 +8,7 @@ public class StarCurrencyIndicator : CurrencyIndicator
     private void Start()
     {
         starCount = LevelManager.instance.UserData.diamonds;
-            
+        
         countText.text = (LevelManager.instance.UserData.totalStar).ToString();
     }
 }

@@ -312,73 +312,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &45224926
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 45224927}
-  - component: {fileID: 45224928}
-  m_Layer: 0
-  m_Name: CurrencyManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &45224927
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45224926}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &45224928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45224926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b51755ea7cceb54cb4f5034a310b541, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPersistant: 0
-  currencyItemsList:
-  - initialCount: 99
-    count: 0
-    targetCount: 0
-    currencyItemKey: 
-    currencyItemType: 0
-  - initialCount: 99
-    count: 0
-    targetCount: 0
-    currencyItemKey: 
-    currencyItemType: 1
-  - initialCount: 99
-    count: 0
-    targetCount: 0
-    currencyItemKey: 
-    currencyItemType: 2
-  - initialCount: 0
-    count: 0
-    targetCount: 0
-    currencyItemKey: 
-    currencyItemType: 3
 --- !u!1 &50338659
 GameObject:
   m_ObjectHideFlags: 0
@@ -2028,7 +1963,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &405762859
 GameObject:
@@ -2245,7 +2180,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &418841662
 GameObject:
@@ -2532,7 +2467,7 @@ Transform:
   - {fileID: 2033733974}
   - {fileID: 634769627}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!210 &462506617
 SortingGroup:
@@ -2809,7 +2744,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &622863589
 MonoBehaviour:
@@ -4292,7 +4227,7 @@ RectTransform:
   - {fileID: 173065269}
   - {fileID: 1717704437}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6344,8 +6279,6 @@ MonoBehaviour:
     cellDataList: []
     lifeLeft: 0
   userData:
-    totalStar: 0
-    diamonds: 0
     lastLevelReached: 0
     lastLevelPlayed: 0
     isMusicOn: 1
@@ -6354,8 +6287,9 @@ MonoBehaviour:
     rocketPowerupCount: 0
     bombPowerupCount: 0
     fistPowerupCount: 0
+    totalStar: 0
+    diamonds: 0
     levelDataList: []
-    CustomLevelDataList: []
   menuUIManager: {fileID: 0}
   lives: 3
 --- !u!1 &1310075163
@@ -6929,7 +6863,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1447205578
 MonoBehaviour:
@@ -8883,7 +8817,7 @@ Transform:
   m_Children:
   - {fileID: 1322378232}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2050061775
 MonoBehaviour:

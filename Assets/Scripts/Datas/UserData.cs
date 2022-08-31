@@ -6,8 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class UserData
 {
-    public int totalStar;
-    public int diamonds;
+    
     
     public int lastLevelReached;
     public int lastLevelPlayed;
@@ -16,10 +15,13 @@ public class UserData
     public bool isSoundOn;
     public bool isVibrationOn;
 
+    public Dictionary<CurrencyItemType, CurrencyItem> currencyItemDictionary;
+
     public int rocketPowerupCount;
     public int bombPowerupCount;
     public int fistPowerupCount;
-
+    public int totalStar;
+    public int diamonds;
 
 
     public List<LevelData> levelDataList;
@@ -30,7 +32,7 @@ public class UserData
         lastLevelReached = 0;
         levelDataList = new List<LevelData>();
         levelDataList.Add(new LevelData(5));
-        isMusicOn = true;
+        isMusicOn = false;
         isSoundOn = true;
         isVibrationOn = true;
         diamonds = 100;

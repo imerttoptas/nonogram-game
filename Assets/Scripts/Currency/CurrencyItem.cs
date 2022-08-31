@@ -8,8 +8,11 @@ public class CurrencyItem
     public int initialCount;
     public int count;
     public int targetCount;
+
     public string currencyItemKey;
+
     public CurrencyItemType currencyItemType;
+
     public System.Action<int> OnCurrencyCountChange;
     
     public void Initialize()
@@ -20,6 +23,7 @@ public class CurrencyItem
         }
         else
         {
+            PlayerPrefs.SetInt(currencyItemKey, initialCount);
             count = targetCount = initialCount;
         }
     }
