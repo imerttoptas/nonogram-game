@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3258658184087904671}
   - component: {fileID: 3258658184087904670}
   - component: {fileID: -8008955697997060481}
+  - component: {fileID: -5422705999710684674}
   m_Layer: 0
   m_Name: Fist
   m_TagString: Untagged
@@ -96,3 +97,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 0}
   fistPrefab: {fileID: 3258658184087904673}
+--- !u!114 &-5422705999710684674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3258658184087904673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c70503dbc168ee743984eb533b7386dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolItemType: 12

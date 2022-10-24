@@ -8,8 +8,8 @@ public class SoundManager : Singleton<SoundManager>
 
     [SerializeField] AudioClip[] soundEffects;
     public AudioSource[] audioSources;
-    public Dictionary<SoundEffectType, AudioClip> soundEffectDictionary;
-
+    private Dictionary<SoundEffectType, AudioClip> soundEffectDictionary;
+    
 
     private void Start()
     {
@@ -20,7 +20,7 @@ public class SoundManager : Singleton<SoundManager>
         }
         SetInitialAudios();
     }
-
+    
     public void PlayEndPanelSound(GameState state)
     {
         if (state == GameState.Win)
@@ -33,8 +33,9 @@ public class SoundManager : Singleton<SoundManager>
         }
     }
 
-    public void PlaySoundEffect(SoundEffectType soundEffectType)
+    public void PlaySoundEffect(SoundEffectType soundEffectType, float volumeLevel = 1f)
     {
+        audioSources[1].volume = volumeLevel;
         audioSources[1].PlayOneShot(soundEffectDictionary[soundEffectType]);
     }
 
@@ -44,13 +45,7 @@ public class SoundManager : Singleton<SoundManager>
         {
             audioSources[0].Play();
         }
-        if (LevelManager.instance.UserData.isSoundOn)
-        {
-            audioSources[1].enabled = true;
-        }
-        else
-        {
-            audioSources[1].enabled = false;
-        }
+
+        audioSources[1].enabled = LevelManager.instance.UserData.isSoundOn;
     }
 }

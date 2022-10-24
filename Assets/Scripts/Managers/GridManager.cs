@@ -11,18 +11,16 @@ public class GridManager : MonoBehaviour
     List<Cell> returnList = new List<Cell>();
     public List<int> numbers = new List<int>();
     public int gridSize;
-    public string wholeText, textToFade, numberToFade, fadedNumbers;
-    public bool isFaded = false;
-    public List<string> fadedNumbersList = new List<string>();
+    public string numberToFade;
     public List<string> printNumbersList = new List<string>();
-
+    [SerializeField] GameObject gridBackground;
+    
     private void Start()
     {
-        
-        
         GameManager.instance.SetGridManager(this);
 
         int levelIndex = LevelManager.currentLevelIndex % 6;
+        
         if (levelIndex <4)
         {
             gridSize = 5;
@@ -31,10 +29,8 @@ public class GridManager : MonoBehaviour
         {
             gridSize = 10;
         }
-        //Debug.Log(LevelManager.currentLevelIndex);
-        //Debug.Log(LevelManager.instance.UserData.levelSeeds[LevelManager.currentLevelIndex]);
         gridBuilder.GenerateGrid(cellList, gridSize, LevelManager.currentLevelIndex);
-
+        
         GameManager.instance.Initialize();
     }
     public void CheckLoadedLevelText()
@@ -46,11 +42,6 @@ public class GridManager : MonoBehaviour
                 CheckText(cellList[i]);
             }
         }
-    }
-
-    public void AddCellsToList(Cell cell)
-    {
-        cellList.Add(cell);
     }
 
     public Cell GetCell(int x, int y)
@@ -90,7 +81,7 @@ public class GridManager : MonoBehaviour
     {
         numbers.Clear();
         int counter = 0;
-
+        
         foreach (Cell cell in line)
         {
             if (cell.currentCellState == CellState.Square)
@@ -119,10 +110,12 @@ public class GridManager : MonoBehaviour
 
     public void CheckText(Cell cell)
     {
+        
         int m = 0;
         List<int> numbersRow = GetLineInfo(GetRow(cell.row));
         List<List<Cell>> listOfSquareBlockInRow = new List<List<Cell>>(numbersRow.Count);
         List<Cell> squaresInRow = FindSquares(GetRow(cell.row));
+        
         for (int i = 0; i < numbersRow.Count; i++)
         {
             List<Cell> tempList = new List<Cell>(numbersRow[i]);
@@ -134,6 +127,7 @@ public class GridManager : MonoBehaviour
             listOfSquareBlockInRow.Add(tempList);
         }
         printNumbersList.Clear();
+        
         for (int i = 0; i < listOfSquareBlockInRow.Count; i++)
         {
             if (listOfSquareBlockInRow[i].FindAll(squares => squares.isTouched).Count == listOfSquareBlockInRow[i].Count)
@@ -146,7 +140,9 @@ public class GridManager : MonoBehaviour
                         leftSideCounter++;
                     }
                 }
+                
                 bool isFaded = false;
+                
                 if (leftSideCounter == listOfSquareBlockInRow[i][0].column)
                 {
                     numberToFade = "<color=#ffffff66>" + numbersRow[i] + "</color>";
@@ -180,10 +176,12 @@ public class GridManager : MonoBehaviour
                 printNumbersList.Add(numbersRow[i].ToString());
             }
         }
+        
         gridBuilder.rowTextList[cell.row].text = string.Empty;
         string str = String.Join(" ", printNumbersList);
         gridBuilder.rowTextList[cell.row].text = str;
         printNumbersList.Clear();
+        
         List<int> numbersCol = GetLineInfo(GetColumn(cell.column));
         List<List<Cell>> listOfSquareBlockInCol = new List<List<Cell>>(numbersCol.Count);
         List<Cell> squaresInCol = FindSquares(GetColumn(cell.column));
@@ -199,6 +197,7 @@ public class GridManager : MonoBehaviour
             listOfSquareBlockInCol.Add(tempList);
         }
         printNumbersList.Clear();
+        
         for (int i = 0; i < listOfSquareBlockInCol.Count; i++)
         {
             if (listOfSquareBlockInCol[i].FindAll(squares => squares.isTouched).Count == listOfSquareBlockInCol[i].Count)
@@ -211,7 +210,9 @@ public class GridManager : MonoBehaviour
                         upSideCounter++;
                     }
                 }
+                
                 bool isFaded = false;
+                
                 if (upSideCounter == listOfSquareBlockInCol[i][0].row)
                 {
                     numberToFade = "<color=#ffffff66>" + numbersCol[i] + "</color>";
@@ -251,7 +252,7 @@ public class GridManager : MonoBehaviour
         printNumbersList.Clear();
     }
 
-    public List<Cell> FindSquares(List<Cell> cellList)
+    private List<Cell> FindSquares(List<Cell> cellList)
     {
         List<Cell> squareList = new List<Cell>();
         foreach (Cell _cell in cellList)
@@ -265,7 +266,7 @@ public class GridManager : MonoBehaviour
         return squareList;
     }
 
-    public List<Cell> FindCrosses(List<Cell> cellList)
+    private List<Cell> FindCrosses(List<Cell> cellList)
     {
         List<Cell> crossList = new List<Cell>();
         foreach (Cell cell in cellList)
@@ -279,12 +280,12 @@ public class GridManager : MonoBehaviour
         return crossList;
     }
 
-    public void FillCrossesInLine(List<Cell> lineList)
+    private void FillCrossesInLine(List<Cell> lineList)
     {
-        List<Cell> crossList = FindCrosses(lineList); //animasyon
+        List<Cell> crossList = FindCrosses(lineList); 
 
         float delay = 0;
-        SoundManager.instance.PlaySoundEffect(SoundEffectType.LineCompletedSound);
+        
         for (int i = 0; i < crossList.Count; i++)
         {
             if (crossList[i].isTouched == false)
@@ -304,42 +305,35 @@ public class GridManager : MonoBehaviour
     public bool TryToFillRow(Cell cell)
     {
         List<Cell> squareList = FindSquares(GetRow(cell.row));
+        
         int touchedSquareNumberinLine = squareList.FindAll(square => square.isTouched).Count;
 
         if (squareList.Count == touchedSquareNumberinLine)
         {
             FillCrossesInLine(GetRow(cell.row));
-
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     public bool TryToFillColumn(Cell cell )
     {
-        List<Cell> colList = GetColumn(cell.column);
+        
+        // List<Cell> colList = GetColumn(cell.column);
         List<Cell> squareList = FindSquares(GetColumn(cell.column));
+        
         int touchedSquareNumberinLine = squareList.FindAll(square => square.isTouched).Count;
-        for (int i = 0; i < colList.Count; i++)
-        {
-            CheckText(colList[i]);
-        }
+        
+        
         if (squareList.Count == touchedSquareNumberinLine)
         {
             FillCrossesInLine(GetColumn(cell.column));
             
             return true;
         }
-        else
-        {
-
-            return false;
-        }
+        return false;
     }
-
+    
     public void CompleteRow(Cell cell)
     {
         List<Cell> rowList = GetRow(cell.row);
@@ -371,8 +365,6 @@ public class GridManager : MonoBehaviour
                 mySequence.Append(columnList[i].transform.GetChild(0).DOScale(1f, 0.3f).From(0f).SetDelay(delay));
                 delay += 0.15f;
             }
-
-            
         }
     }
 
@@ -417,7 +409,11 @@ public class GridManager : MonoBehaviour
         }
         CheckText(cell); 
     }
-
+    
+    public void WrongClickAnimation()
+    {
+        gridBackground.transform.DOShakePosition(1f, 0.5f, 10, 1f);
+    }
     public List<CellData> GetCellDataList()
     {
         List<CellData> dataList = new List<CellData>();

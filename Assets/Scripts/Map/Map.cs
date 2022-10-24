@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Map : MonoBehaviour
-{
+{   
     public List<Transform> buttonPositions;
     public int mapIndex;
     public int previousButtonCount;
     public PlayLevelButton levelButtonPrefab;
-    private List<PoolItem> buttonList;
+    public List<PoolItem> buttonList;
     private PoolItem poolItem;
     private void Awake()
     {
         
         buttonList = new List<PoolItem>();
     }
-    public void Initialize()
+
+    private void Initialize()
     {
         for (int i = 0; i < buttonPositions.Count; i++)
         {

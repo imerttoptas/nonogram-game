@@ -13,7 +13,8 @@ public class PoolManager : Singleton<PoolManager>
         public List<PoolItem> usingList;
     }
     public List<Pool> poolList;
-    public Dictionary<PoolItemType, Pool> poolDictionary;
+    private Dictionary<PoolItemType, Pool> poolDictionary;
+    
     
     void Start()
     {
@@ -26,7 +27,6 @@ public class PoolManager : Singleton<PoolManager>
     
     public void RemoveItemFromPool(PoolItem poolItem)
     {
-
         if (poolDictionary[poolItem.poolItemType].usingList.Contains(poolItem))
         {
             poolDictionary[poolItem.poolItemType].usingList.Remove(poolItem);
@@ -35,9 +35,7 @@ public class PoolManager : Singleton<PoolManager>
             poolDictionary[poolItem.poolItemType].availableList.Enqueue(poolItem);
         }
     }
-
     
-
     public void ResetAllPools()
     {
         foreach (Pool pool in poolList)
@@ -55,8 +53,10 @@ public class PoolManager : Singleton<PoolManager>
     public PoolItem TryToGetItem(PoolItemType poolItemType)
     {
         PoolItem targetItem = null;
+        
         if (poolDictionary.TryGetValue(poolItemType, out Pool targetPool))
         {
+            
             if (targetPool.availableList.Count > 0)
             {
                 targetItem = targetPool.availableList.Dequeue();
@@ -75,7 +75,9 @@ public class PoolManager : Singleton<PoolManager>
                 Debug.LogError("ERROR");
             }
         }
+        
         return targetItem;
     }
+    
 }
 

@@ -8,7 +8,6 @@ public class GridBuilder : MonoBehaviour
     #region Grid
     [SerializeField] GridManager gridManager;
     [SerializeField] SpriteRenderer gridBackground;
-    [SerializeField] Cell _cellPrefab;
     [SerializeField] GameObject thinLine;
     [SerializeField] GameObject boldLine;
     #endregion
@@ -25,24 +24,11 @@ public class GridBuilder : MonoBehaviour
     #endregion
     public void GenerateGrid(List<Cell> cellList, int gridSize, int seed)
     {
-        #region GridBackground Scaling
-        float screenRatio = (float)Screen.width / (float)Screen.height;
-        float gridScaleCoefficent = 1f;
-        if (screenRatio < Constants.DEFAULT_SCREEN_RATIO)
-        {
-            gridScaleCoefficent = screenRatio / Constants.DEFAULT_SCREEN_RATIO;
-        }
-        else
-        {
-            gridScaleCoefficent = Constants.DEFAULT_SCREEN_RATIO / screenRatio;
-        }
 
-        gridBackground.GetComponent<SpriteRenderer>().size = new Vector2(gridBackground.GetComponent<SpriteRenderer>().size.x * gridScaleCoefficent, gridBackground.GetComponent<SpriteRenderer>().size.y * gridScaleCoefficent);
-
-        gridBackground.transform.GetChild(0).localScale = new Vector2(gridBackground.GetComponent<SpriteRenderer>().size.x, gridBackground.GetComponent<SpriteRenderer>().size.y);
-        #endregion
-
+        ScalingGridBackground();
+        
         #region Scaling Cells
+        
         float gridWidth = gridBackground.bounds.size.x * gridBackground.transform.localScale.x;
         float gridHeight = gridBackground.bounds.size.y * gridBackground.transform.localScale.y;
 
@@ -51,30 +37,25 @@ public class GridBuilder : MonoBehaviour
 
         float defaultPosX = (gridBackground.transform.position.x - gridWidth / 2) + (newCellScaleX / 2);
         float defaultPosY = (gridBackground.transform.position.y + gridHeight / 2) - (newCellScaleY / 2);
+        
         #endregion
-
+        
         for (int row = 0; row < gridSize; row++)
         {
             for (int col = 0; col < gridSize; col++)
             {
                 float newCellPosX = defaultPosX + (col * newCellScaleX);
                 float newCellPosY = defaultPosY - (row * newCellScaleY);
-
-                PoolItem _cell = PoolManager.instance.TryToGetItem(PoolItemType.Cell);
-
-                Cell createdCell = _cell.GetComponent<Cell>();
-                createdCell.transform.position = new Vector2(newCellPosX, newCellPosY);
-                createdCell.transform.localScale = new Vector2(newCellScaleX, newCellScaleY);
-                createdCell.transform.SetParent(gridBackground.transform);
-                createdCell.row = row;
-                createdCell.column = col;
-
+                
+                Cell createdCell = GetCreatedCell(new Vector2(newCellPosX, newCellPosY),
+                    new Vector2(newCellScaleX, newCellScaleY), row, col);
                 cellList.Add(createdCell);
             }
+            
         }
 
         RandomLevelGenerator(cellList, seed);
-
+        
         for (int row = 0; row < gridSize; row++)
         {
             for (int col = 0; col < gridSize; col++)
@@ -144,7 +125,53 @@ public class GridBuilder : MonoBehaviour
             }
         }
     }
-    public void RandomLevelGenerator(List<Cell> cellList, int seed)
+
+    private void ScalingGridBackground()
+    {
+
+        float screenRatio = (float)Screen.width / (float)Screen.height;
+        float gridScaleCoefficent = 1f;
+        
+        if (screenRatio < Constants.DEFAULT_SCREEN_RATIO)
+        {
+            gridScaleCoefficent = screenRatio / Constants.DEFAULT_SCREEN_RATIO;
+        }
+        else
+        {
+            gridScaleCoefficent = Constants.DEFAULT_SCREEN_RATIO / screenRatio;
+        }
+        gridBackground.GetComponent<SpriteRenderer>().size *= gridScaleCoefficent;
+        
+        gridBackground.transform.GetChild(0).localScale = new Vector2(gridBackground.GetComponent<SpriteRenderer>().size.x, gridBackground.GetComponent<SpriteRenderer>().size.y);
+
+    }
+    
+    private Cell GetCreatedCell(Vector2 position, Vector2 scale,int row, int col)
+    {
+        PoolItem _cell = PoolManager.instance.TryToGetItem(PoolItemType.Cell);
+
+        Cell createdCell = _cell.GetComponent<Cell>();
+        
+        createdCell.transform.position = position;
+        createdCell.transform.localScale = scale;
+        createdCell.transform.SetParent(gridBackground.transform);
+        createdCell.row = row;
+        createdCell.column = col;
+
+        return createdCell;
+    }
+
+    private void DisplayRowText(int row)
+    {
+        List<int> numbers = gridManager.GetLineInfo(gridManager.GetRow(row));
+        Debug.Log(numbers);
+    }
+    private void DisplayColText(int col)
+    {
+        List<int> numbers = gridManager.GetLineInfo(gridManager.GetColumn(col));
+        Debug.Log(numbers);
+    }
+    private void RandomLevelGenerator(List<Cell> cellList, int seed)
     {
         Random.InitState(seed);
         float[] gridMap = new float[gridManager.gridSize * gridManager.gridSize];
@@ -164,7 +191,7 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    public void NumberDisplayer(int row, int col, float newCellScaleX, float rowPosX, float rowPosY)
+    private void NumberDisplayer(int row, int col, float newCellScaleX, float rowPosX, float rowPosY)
     {
         if (displayRow == true && displayColumn == false) //row
         {
@@ -173,7 +200,7 @@ public class GridBuilder : MonoBehaviour
             TextMeshPro text = leftText.GetComponent<TextMeshPro>();
             for (int i = 0; i < numbers.Count; i++)
             {
-                text.text += numbers[i].ToString() + " ";
+                text.text += numbers[i] + " ";
             }
             text.transform.position = new Vector2(rowPosX, rowPosY);
             text.fontSize = newCellScaleX * Constants.FONT_SIZE_MULTIPLIER;
@@ -188,7 +215,7 @@ public class GridBuilder : MonoBehaviour
             TextMeshPro text = upperText.GetComponent<TextMeshPro>();
             for (int i = 0; i < numbers.Count; i++)
             {
-                text.text += numbers[i].ToString() + "\n";
+                text.text += numbers[i] + "\n";
             }
             text.transform.position = new Vector2(rowPosX, rowPosY);
             text.fontSize = newCellScaleX * Constants.FONT_SIZE_MULTIPLIER;

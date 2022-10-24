@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
@@ -9,14 +10,13 @@ public class GameManager : Singleton<GameManager>
     public GridManager gridManager;
     public LevelData currentLevelData;
     public UserData userData;
-    public MenuUIManager menuUIManager;
-
+    
     public System.Action<GameState> OnGameStateChanged;
     public System.Action<int> OnLifeChanged;
-
+    
     public int lives;
     
-
+    [SerializeField] private EventSystem eventSystem;
     public void Initialize()
     {
         userData = LevelManager.instance.UserData;
@@ -41,14 +41,14 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void SetGridManager(GridManager gridManager)
+    public void SetGridManager(GridManager _gridManager)
     {
-        this.gridManager = gridManager;
+        this.gridManager = _gridManager;
     }
 
     public GridManager GetGridManager()
     {
-        return this.gridManager;
+        return gridManager;
     }
 
     public void ChangeGameState(GameState state)
@@ -62,7 +62,7 @@ public class GameManager : Singleton<GameManager>
 
     public void AddGameState(GameState state)
     {
-        if (!(currentGameState.Contains(state)))
+        if (!currentGameState.Contains(state))
         {
             currentGameState |= state;
             OnGameStateChanged?.Invoke(currentGameState);
@@ -87,15 +87,25 @@ public class GameManager : Singleton<GameManager>
         OnLifeChanged?.Invoke(lives);
     }
 
-    public void CheckLifeCount(int lifeCount)
+    private void CheckLifeCount(int lifeCount)
     {
         if (lifeCount == 0)
         {
-
             ChangeGameState(GameState.Lose);
         }
     }
 
+   
+    public void DisableInput()
+    {
+        eventSystem.enabled = false;
+    }
+    
+    public void EnableInput()
+    {
+        eventSystem.enabled = true;
+    }
+    
     private void OnEnable()
     {
         OnLifeChanged += CheckLifeCount;

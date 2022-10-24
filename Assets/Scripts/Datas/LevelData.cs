@@ -21,6 +21,5 @@ public class LevelData
         stars = LevelManager.instance.UserData.levelDataList[LevelManager.currentLevelIndex].stars;
         lifeLeft = 3;
         cellDataList = new List<CellData>(GameManager.instance.GetGridManager().gridSize * GameManager.instance.GetGridManager().gridSize);
-
     }
 }
