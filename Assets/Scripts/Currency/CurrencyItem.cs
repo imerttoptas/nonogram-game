@@ -10,9 +10,7 @@ public class CurrencyItem
     public int targetCount;
 
     public string currencyItemKey;
-
     public CurrencyItemType currencyItemType;
-
     public System.Action<int> OnCurrencyCountChange;
     
     public void Initialize()
@@ -33,6 +31,7 @@ public class CurrencyItem
         targetCount = amount;
         DOTween.To(() => count, x => count = x, targetCount, duration).OnUpdate(()=>
         OnCurrencyCountChange?.Invoke(count));
+        
         PlayerPrefs.SetInt(currencyItemKey, targetCount);
     }
 }

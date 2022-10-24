@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,23 +16,29 @@ public class InputManager : MonoBehaviour
     bool wrongClick = false;
     public InputType currentInputType = InputType.Square;
     MoveDirection currentMoveDirection;
+    
+    private void Start()
+    {
+        PowerupController.instance.isPowerUpAnimEnded = true;
+        GameManager.instance.EnableInput();
+    }
 
-   
     void Update()
     {
         if (GameManager.instance.currentGameState == GameState.Playing || GameManager.instance.currentGameState.Contains(GameState.PowerUpInUsage))
         {
             if (!wrongClick && Input.GetMouseButton(0))
             {
-                if (!GameManager.instance.currentGameState.Contains(GameState.PowerUpInUsage))
+                Cell hitCell = TryToGetHitCell();
+
+                if (hitCell != null)
                 {
-                    Cell hitCell = TryToGetHitCell();
-
-                    if (hitCell != null)
-                    {
-                        chosenCell = hitCell; //check out later
-                    }
-
+                    chosenCell = hitCell; //check out later
+                }
+                
+                if (!GameManager.instance.currentGameState.Contains(GameState.PowerUpInUsage) && !(gameUIManager.isPowerupSelected) && hitCell != null && PowerupController.instance.isPowerUpAnimEnded)// normal input
+                {
+                    
                     if (chosenCell != null && chosenCell.isTouched == false)
                     {
                         if (chosenCell.IsCellReadyToDisplay(chosenCell, currentInputType))
@@ -60,48 +67,44 @@ public class InputManager : MonoBehaviour
                         }
                     }
                 }
-                else
+                else if((gameUIManager.isPowerupSelected) && GameManager.instance.currentGameState.Contains(GameState.PowerUpInUsage)) // power up input
                 {
-
-                    Cell hitCell = TryToGetHitCell();
-                    RaycastHit2D hit = Physics2D.Raycast(mainCam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
-                    if (hitCell != null)
+                    if (hitCell!= null)
                     {
-                        chosenCell = hitCell; //check out later
+                        
+                        RaycastHit2D hit = Physics2D.Raycast(mainCam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                        
+                        if (hit.collider != null && hit.collider.CompareTag("Cell") && chosenCell.isTouched == false)
+                        {   
+                            PowerupController.instance.UsePowerUp(chosenCell);
+                            gameUIManager.isPowerupSelected = false;
+                            gameUIManager.FadeOutPowerUpMask((int)PowerupController.instance.currentPowerUpType);
+                            GameManager.instance.RemoveGameState(GameState.PowerUpInUsage);
+                        }
                     }
-                    if (hit.collider != null && hit.collider.CompareTag("Cell") && chosenCell.isTouched == false)
-                    {
-                        PowerupController.instance.UsePowerUp(chosenCell);
-                        gameUIManager.isPowerupSelected = false;
-                    }
-                    gameUIManager.FadeOutPowerUpMask((int)PowerupController.instance.currentPowerUpType);
-                    GameManager.instance.RemoveGameState(GameState.PowerUpInUsage);
-                    //gameUIManager.isPowerupSelected = false;
                 }
             }
-
+            
             else if (Input.GetMouseButtonUp(0))
             {
-                
                 currentMoveDirection = MoveDirection.Null;
+                
                 if (wrongClick)
                 {
-
+                    gridManager.WrongClickAnimation();
                     GameManager.instance.DecreaseLife();
                     wrongClick = false;
                     gridManager.CheckGrid(chosenCell);
+                    
                 }
                 
-
                 chosenCell = null;
                 firstCell = null;
+                
             }
-
-            
         }
     }
-
+    
     private bool CheckMoveDirection(Cell cell)
     {
         if (currentMoveDirection == MoveDirection.Horizontal)
@@ -114,12 +117,12 @@ public class InputManager : MonoBehaviour
         }
         return true;
     }
-
+    
     private Cell TryToGetHitCell()
     {
         RaycastHit2D hit = Physics2D.Raycast(mainCam.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-       
-        if (hit.collider != null && hit.collider.tag == "Cell")
+        
+        if (hit.collider != null && hit.collider.CompareTag("Cell"))
         {
             Cell cell = hit.collider.gameObject.GetComponent<Cell>();
 

@@ -1,16 +1,27 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerupController : Singleton<PowerupController>
 {
-    public GridManager gridManager;
     public PowerUpType currentPowerUpType;
     public Rocket rocket;
     public Bomb bomb;
     public Fist fist;
+    public bool isPowerUpAnimEnded = true;
     public System.Action<int> OnPowerUpCountChange;
-
+    public Dictionary<PowerUpType, Powerup> powerUpDictionary;
+    private void Start()
+    {
+        powerUpDictionary = new Dictionary<PowerUpType, Powerup>()
+        {
+            { PowerUpType.Rocket, rocket },
+            { PowerUpType.Bomb, bomb },
+            { PowerUpType.Fist, fist }
+        }; 
+        
+    }
 
     public void UsePowerUp(Cell cell)
     {
@@ -25,44 +36,57 @@ public class PowerupController : Singleton<PowerupController>
             case PowerUpType.Fist:
                 fist.Use(cell);
                 break;
-            default:
-                break;
         }
     }
-    public void SetGridManager(GridManager _gridManager)
+   
+    public int GetPowerUpCount(PowerUpType powerUpType)
     {
-        gridManager = _gridManager;
+        switch (powerUpType)
+        {
+            case PowerUpType.Rocket:
+                return CurrencyManager.instance.GetItemCount(CurrencyItemType.Rocket);
+            case PowerUpType.Bomb:
+                return CurrencyManager.instance.GetItemCount(CurrencyItemType.Bomb);
+            case PowerUpType.Fist:
+                return CurrencyManager.instance.GetItemCount(CurrencyItemType.Fist);
+            default:
+                return 0;
+        }
     }
-    public int GetPowerupCount(PowerUpType powerUpType)
+    
+    public int GetPowerupCost()
     {
-        UserData userData = LevelManager.instance.UserData;
+        switch (currentPowerUpType)
+        {
+            case PowerUpType.Rocket:
+                return rocket.Cost;
+            case PowerUpType.Bomb:
+                return bomb.Cost;
+            case PowerUpType.Fist:
+                return fist.Cost;
+            default:
+                return 0;
+        }
+    }
+    
+    public void GetPowerUpSpriteSizeAndRotation()
+    {
         
-        switch (powerUpType)
-        {
-            case PowerUpType.Rocket:
-                return userData.rocketPowerupCount;
-            case PowerUpType.Bomb:
-                return userData.bombPowerupCount;
-            case PowerUpType.Fist:
-                return userData.fistPowerupCount;
-            default:
-                return 0;
-        }
     }
-    public int GetPowerupCost(PowerUpType powerUpType)
+    public CurrencyItemType GetCurrencyItemTypeOfPowerUp()
     {
-        switch (powerUpType)
+        switch (currentPowerUpType)
         {
             case PowerUpType.Rocket:
-                return 100;
+                return CurrencyItemType.Rocket;
             case PowerUpType.Bomb:
-                return 150;
+                return CurrencyItemType.Bomb;
             case PowerUpType.Fist:
-                return 100;
+                return CurrencyItemType.Fist;
             default:
                 return 0;
         }
     }
 
-
+    
 }

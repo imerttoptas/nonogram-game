@@ -38,6 +38,12 @@ public enum PoolItemType
     ForestMap = 6,
     SnowMap = 7,
     LevelButton = 8,
+    FirstBeachMap= 9,
+    Rocket = 10,
+    Bomb = 11,
+    Fist = 12,
+    StarIcon = 13,
+    DiamondIcon = 14
     
 }
 
@@ -56,8 +62,10 @@ public enum SoundEffectType
     WrongClick = 1,
     WinSound = 2,
     LoseSound = 3,
-    LineCompletedSound = 4
-
+    LineCompletedSound = 4,
+    RocketPowerUp = 5,
+    BombPowerUp = 6,
+    FistPowerUp = 7
 }
 
 

@@ -1,10 +1,16 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using DG.Tweening.Plugins.Core.PathCore;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Vector3 = UnityEngine.Vector3;
 
 public class MenuUIManager : MonoBehaviour
 {
@@ -15,27 +21,38 @@ public class MenuUIManager : MonoBehaviour
     [SerializeField] Image[] stars = new Image[3];
     [SerializeField] Image mask;
     #endregion
-
-
+    
     List<PoolItem> buttonPoolItemList;
-
-
+    
     int levelBackgroundIndex;
     int levelToGo;
-
+    
     [SerializeField] MainMenuMapBuilder mainMenuMapBuilder;
+    [SerializeField] private Canvas canvas;
+        
+    [SerializeField] private StarCurrencyIndicator starCurrencyIndicator;
+    [SerializeField] private RectTransform starCurrencyTargetPos;
+    [SerializeField] private DiamondCurrencyIndicator diamondCurrencyIndicator;
+    [SerializeField] private RectTransform diamondCurrencyTargetPos;
 
+    [SerializeField] private EventSystem eventSystem;
+    private bool isCheckedForAnimation;
+    
     private void Start()
     {
-        foreach (Map map in mainMenuMapBuilder.GetMaps())
+        isCheckedForAnimation = false;
+        MakeCurrencyAnimation(LevelManager.instance.targetStarCount, LevelManager.instance.targetDiamondCount);
+        
+        LevelManager.instance.targetDiamondCount = 0;
+        LevelManager.instance.targetStarCount = 0;
+    }
+
+    private void Update()
+    {
+        if (starCurrencyIndicator.isStarAnimEnded && diamondCurrencyIndicator.isDiamondAnimEnded && !isCheckedForAnimation)
         {
-            foreach (PoolItem poolItem in map.GetButtonList())
-            {
-                if (LevelManager.instance.UserData.lastLevelReached >= poolItem.GetComponent<PlayLevelButton>().indexLevel)
-                {
-                    //poolItem.GetComponent<PlayLevelButton>().SetLevelButton();
-                }
-            }
+            eventSystem.enabled = true;
+            isCheckedForAnimation = true;
         }
     }
 
@@ -51,8 +68,8 @@ public class MenuUIManager : MonoBehaviour
             playLevelButton.levelButton.onClick.AddListener(() => TryToPlayLevel(LevelManager.instance.UserData.IsLevelUnlocked(levelIndex), levelIndex, playLevelButton.gameObject.GetComponent<Button>()));
         }
     }
-
-    public void SetMaskState(bool playPanelIsOpen)
+    
+    private void SetMaskState(bool playPanelIsOpen)
     {
         if (playPanelIsOpen)
         {
@@ -64,12 +81,12 @@ public class MenuUIManager : MonoBehaviour
             mask.gameObject.SetActive(false);
         }
     }
-
-    public void TryToPlayLevel(bool isUnlocked, int levelIndex, Button button)
+    
+    private void TryToPlayLevel(bool isUnlocked, int levelIndex, Button button)
     {
         if (isUnlocked)
         {
-            char backgroundLetter = button.transform.parent.transform.parent.name.ToString()[0];
+            char backgroundLetter = button.transform.parent.transform.parent.name[0];
             switch (backgroundLetter)
             {
                 case 'B':
@@ -90,8 +107,8 @@ public class MenuUIManager : MonoBehaviour
             SetLevelPanel(levelIndex);
         }
     }
-
-    void SetLevelPanel(int levelIndex)
+    
+    private void SetLevelPanel(int levelIndex)
     {
         float delay = 0;
         for (int i = 0; i < LevelManager.instance.UserData.levelDataList[levelIndex].stars; i++)
@@ -113,13 +130,13 @@ public class MenuUIManager : MonoBehaviour
         levelInfoText.text = "LEVEL " + (levelIndex + 1).ToString();
         levelToGo = levelIndex;
     }
-
+    
     public void ExitLevelPanel()
     {
         mask.gameObject.SetActive(false);
         playLevelPanel.gameObject.SetActive(false);
     }
-
+    
     public void PlayLevel()
     {
         LevelManager.currentLevelIndex = levelToGo;
@@ -127,5 +144,27 @@ public class MenuUIManager : MonoBehaviour
         LevelManager.instance.ChangeScene(1);
         LevelManager.instance.levelBackgroundIndex = levelBackgroundIndex;
     }
-
+    
+    private void MakeCurrencyAnimation(int starCount, int diamondAmount)
+    {
+        if (starCount>0 )
+        {
+            Vector3 startPosition = mainMenuMapBuilder.GetLCurrentevelButtonPosition();
+            Vector3 endPosition = starCurrencyTargetPos.position;
+            starCurrencyIndicator.StarAnimation(canvas.transform, startPosition, endPosition, starCount);
+        }
+        else
+        {
+            starCurrencyIndicator.SetText(PlayerPrefs.GetInt("Star"));
+        }
+                    
+        if (diamondAmount >0)
+        {
+            eventSystem.enabled = false;
+            Vector3 startPosition = mainMenuMapBuilder.GetLCurrentevelButtonPosition();
+            Vector3 endPosition = diamondCurrencyTargetPos.position;
+            diamondCurrencyIndicator.DiamondAnimation(canvas.transform,startPosition,endPosition,diamondAmount);
+        }
+    }
+    
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : Singleton<LevelManager>
@@ -10,11 +11,17 @@ public class LevelManager : Singleton<LevelManager>
     public static int currentLevelIndex;
     private UserData userData;
     public int levelBackgroundIndex;
+    
     public UserData UserData => userData;
+    
+    private static int starCount;
+    public int targetStarCount;
+    private static int diamondCount;
+    public int targetDiamondCount;
+    
 
     private void Start()
     {
-        
         if (PlayerPrefs.HasKey("UserData"))
         {
             LoadUserData();
@@ -23,28 +30,32 @@ public class LevelManager : Singleton<LevelManager>
         {
             CreateUserData();
         }
+        
+        CalculateInitalCurrency();
+        
     }
-
+    
     public void ChangeScene(int buildIndex)
     {
         SceneManager.LoadScene(buildIndex);
         OnSceneChanged?.Invoke(buildIndex);
     }
-    public void CreateUserData()
+
+    private void CreateUserData()
     {
         userData = new UserData();
     }
-    public void SaveUserData()
+
+    private void SaveUserData()
     {
         string userDataStringToSave = JsonUtility.ToJson(userData, true);
         userData.levelDataList[0].unlocked = true;
         PlayerPrefs.SetString("UserData", userDataStringToSave);
         PlayerPrefs.Save();
     }
-
+    
     public void SaveLevelData()
     {
-        Debug.Log("save level data çalıştı");
         LevelData levelData = userData.levelDataList[currentLevelIndex];
         levelData.cellDataList = GameManager.instance.GetGridManager().GetCellDataList();
         levelData.lifeLeft = GameManager.instance.lives;
@@ -52,18 +63,21 @@ public class LevelManager : Singleton<LevelManager>
         string userDataStringToSave = JsonUtility.ToJson(userData, true);
         PlayerPrefs.SetString("UserData", userDataStringToSave);
         PlayerPrefs.Save();
+        
     }
 
-    public void SaveStars(int star)
+    private void SaveStars(int star)
     {
+        Debug.Log("Save Stars");
         if (star > userData.levelDataList[currentLevelIndex].stars)
         {
-            userData.totalStar += (star - userData.levelDataList[currentLevelIndex].stars);
+            targetStarCount += star - userData.levelDataList[currentLevelIndex].stars;
+            Debug.Log("targetStarCount : " + targetStarCount);
             userData.levelDataList[currentLevelIndex].stars = star;
         }
     }
-
-    public void LoadUserData()
+    
+    private void LoadUserData()
     {
         userData = JsonUtility.FromJson<UserData>(PlayerPrefs.GetString("UserData"));
     }
@@ -76,22 +90,23 @@ public class LevelManager : Singleton<LevelManager>
         GameManager.instance.GetGridManager().CheckLoadedLevelText();
     }
 
-    public void DeleteLevel()
+    private void DeleteLevel()
     {
         LevelData levelData = userData.levelDataList[currentLevelIndex];
         levelData.DeleteLevelData();
         userData.levelDataList[currentLevelIndex] = levelData;
     }
-
+    
     public void SaveGame(GameState state)
     {
         if (state == GameState.Win)
-        {
-            LevelData levelData = userData.levelDataList[currentLevelIndex];
+        {   
+            
+            // CalculateDiamondCountToIncrease(currentLevelIndex);
+            userData.lastLevelPlayed = currentLevelIndex + 1;
             SaveStars(GameManager.instance.lives);
             if (currentLevelIndex >= userData.lastLevelReached)
             {
-                userData.diamonds += 50;
                 userData.lastLevelReached += 1;
                 userData.levelDataList.Add(new LevelData(GameManager.instance.GetGridManager().gridSize));
             }
@@ -99,13 +114,69 @@ public class LevelManager : Singleton<LevelManager>
         }
         if (state == GameState.Lose)
         {
+            userData.lastLevelPlayed = currentLevelIndex + 1;
             DeleteLevel();
-            //CurrencyManager.instance.TryToDecreaseCurrencyCount(CurrencyItemType.Diamond, 20);
         }
+    }
+    
+    private void CalculateInitalCurrency()
+    {
+        targetStarCount = 0;
+        starCount = PlayerPrefs.GetInt("Star");
+        diamondCount = PlayerPrefs.GetInt("Diamond");
+    }
+        
+    public int CalculateDiamondCountToIncrease(int levelIndex)
+    {
+        if (levelIndex >= userData.lastLevelReached)
+        {
+            if (levelIndex % 6 <=3)
+            {
+                targetDiamondCount += 250;
+            }
+            else
+            {
+                targetDiamondCount += 750;
+            }
+        }
+        else
+        {
+            if (levelIndex % 6 <=3)
+            {
+                targetDiamondCount += 100;
+            }
+            else
+            {
+                targetDiamondCount += 250;
+            }
+        }
+
+        return targetDiamondCount;
+    }
+            
+    private void ArangeStarCount(int sceneIndex)
+    {
+        if (sceneIndex == 0)
+        {
+            starCount = PlayerPrefs.GetInt("Star");
+        }
+    }
+    
+        
+    private void OnEnable()
+    {
+        OnSceneChanged += ArangeStarCount;
+    }
+
+    private void OnDisable()
+    {
+        OnSceneChanged -= ArangeStarCount;
     }
 
     private void OnApplicationQuit()
     {
+        CurrencyManager.instance.IncreaseCurrencyCount(CurrencyItemType.Star,targetStarCount);
+        CurrencyManager.instance.IncreaseCurrencyCount(CurrencyItemType.Diamond,targetDiamondCount);
         SaveUserData();
     }
 }

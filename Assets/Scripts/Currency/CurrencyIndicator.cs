@@ -7,11 +7,10 @@ public class CurrencyIndicator : MonoBehaviour
 {
     public CurrencyItemType currencyItemType;
     public TextMeshProUGUI countText;
-
+    
     private void Start()
     {
-        //countText.text = PlayerPrefs.GetInt(CurrencyManager.instance.GetCurrencyItem(currencyItemType).currencyItemKey).ToString();
-        //countText.text = 
+        countText.text = PlayerPrefs.GetInt(CurrencyManager.instance.GetCurrencyItem(currencyItemType).currencyItemKey).ToString();
     }
     public void SetText(int amount)
     {
